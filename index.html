@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Main Event: Steven's Bach Weekend</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;0,9..144,700;1,9..144,500&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#141210;
+  --panel:#1E1B18;
+  --panel2:#282421;
+  --line:#3F3832;
+  --line-soft:#2C2824;
+  --paper:#F4EFE6;
+  --muted:#9A9188;
+  --gold:#E0A01A;
+  --rose:#C43B5A;
+  --indigo:#1E4D8C;
+  --malort:#B8C44A;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'Figtree',system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:#7EB0E8;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px;}
+
+/* ---------- header ---------- */
+header{
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#1A1714,#141210);
+  padding:40px 0 32px;
+  text-align:center;
+}
+.site-nav{
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 18px;
+}
+.site-nav a{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;text-decoration:none;
+  border:1px solid var(--line);border-radius:999px;
+  padding:6px 14px;color:var(--muted);
+}
+.site-nav a:hover{color:var(--paper);border-color:var(--muted);}
+.site-nav a.on{border-color:var(--gold);color:var(--gold);}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 12px;
+}
+h1{
+  font-family:'Bangers',Impact,sans-serif;
+  font-weight:400;
+  font-size:clamp(36px,7.2vw,68px);
+  line-height:1.05;
+  margin:0;
+  color:var(--paper);
+  letter-spacing:.03em;
+}
+h1 .h1-kicker{color:var(--gold);}
+.sub{
+  margin:14px auto 0;max-width:540px;color:var(--muted);font-size:15.5px;
+}
+.hq-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;}
+.addr-chip{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1px solid var(--line);background:var(--panel);
+  border-radius:999px;padding:8px 16px;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--paper);
+  cursor:pointer;text-decoration:none;transition:.15s;
+  appearance:none;-webkit-appearance:none;
+}
+.addr-chip:hover{border-color:var(--gold);color:var(--paper);}
+.addr-chip b{color:var(--gold);font-weight:600;}
+
+/* ---------- section furniture ---------- */
+section{padding:40px 0;border-bottom:1px solid var(--line-soft);}
+.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+h2{
+  font-family:'Bangers',Impact,sans-serif;font-weight:400;
+  font-size:clamp(28px,4.2vw,42px);letter-spacing:.04em;text-transform:uppercase;
+  margin:0;color:var(--paper);
+}
+.sec-note{color:var(--muted);font-size:14.5px;margin:0 0 20px;max-width:640px;}
+
+/* ---------- homebase ---------- */
+.homebase{
+  display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;
+  border:1px solid rgba(196,59,90,.4);
+  border-radius:16px;
+  background:linear-gradient(160deg,rgba(196,59,90,.12),transparent 62%);
+  padding:22px;
+}
+.hb-icon{width:72px;height:72px;flex:none;border-radius:16px;}
+.hb-label{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--rose);margin:0 0 6px;
+}
+.hb-name{
+  font-family:'Bangers',Impact,sans-serif;font-weight:400;
+  font-size:clamp(28px,4.2vw,42px);letter-spacing:.04em;text-transform:uppercase;
+  margin:0 0 10px;
+}
+.hb-why{margin:0 0 14px;color:var(--paper);}
+.hb-list{margin:0;padding-left:18px;color:var(--muted);font-size:14.5px;}
+.hb-list li{margin-bottom:5px;}
+.hb-list b{color:var(--paper);font-weight:600;}
+
+/* ---------- map ---------- */
+.map-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.btn{
+  font-family:'Figtree',sans-serif;font-weight:600;font-size:14px;
+  background:var(--panel2);color:var(--paper);
+  border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;cursor:pointer;transition:.15s;
+}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.btn.on{background:var(--indigo);border-color:var(--indigo);color:#fff;}
+.map-legend{
+  display:flex;flex-wrap:wrap;gap:14px 18px;margin:0 0 12px;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
+}
+.map-legend span{display:inline-flex;align-items:center;gap:7px;}
+.lg{
+  width:16px;height:16px;border-radius:50%;display:inline-block;flex:none;
+  box-shadow:0 0 0 2px #fff, 0 1px 2px rgba(0,0,0,.25);
+}
+.lg-hq{background:#fff;border:1.5px solid #1C1917;border-radius:5px;}
+.lg-bar{background:var(--rose);border-radius:5px;}
+.lg-pin{background:#3A322C;border:1.5px solid var(--gold);}
+.lg-crawl{background:#fff;border:2px solid var(--indigo);}
+#map{
+  height:min(66vh,560px);min-height:380px;
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#d6e4d0;
+}
+.leaflet-container{background:#d6e4d0;font-family:'Figtree',sans-serif;}
+.leaflet-div-icon{background:transparent;border:0;}
+.leaflet-marker-pane{z-index:600;}
+.leaflet-popup-content-wrapper{
+  background:var(--panel);color:var(--paper);border:1px solid var(--line);
+  border-radius:12px;box-shadow:0 12px 34px rgba(0,0,0,.45);
+}
+.leaflet-popup-tip{background:var(--panel);border:1px solid var(--line);}
+.leaflet-popup-content{margin:14px 16px;line-height:1.5;}
+.leaflet-popup-close-button{color:var(--muted)!important;}
+.leaflet-control-attribution{background:rgba(255,255,255,.78)!important;color:#5c5c5c!important;font-size:10px!important;}
+.leaflet-control-attribution a{color:#3a3a3a!important;}
+.pop-name{font-family:'Fraunces',Georgia,serif;font-weight:650;font-size:20px;letter-spacing:-.02em;display:block;margin-bottom:2px;}
+.pop-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);display:block;margin-bottom:8px;}
+.pop-note{font-size:13.5px;margin:0 0 10px;}
+.pop-link{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;background:none;border:0;color:var(--gold);cursor:pointer;padding:0;text-decoration:underline;}
+
+/* markers */
+.pin{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;
+  background:#3A322C;color:var(--paper);border:2px solid var(--gold);
+  box-shadow:0 1px 4px rgba(0,0,0,.35), 0 0 0 2px #fff;
+}
+.pin.crawl{
+  width:30px;height:30px;
+  background:#fff;color:var(--indigo);border:3px solid var(--indigo);
+  box-shadow:0 2px 6px rgba(0,0,0,.35), 0 0 0 3px #fff;
+  font-weight:700;
+}
+.pin-hq{
+  width:56px;height:68px;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));
+}
+.pin-bar{
+  width:44px;height:44px;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.3));
+}
+.pin-fun{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:#3A322C;border:2px solid var(--gold);
+  box-shadow:0 1px 4px rgba(0,0,0,.35), 0 0 0 2px #fff;
+}
+.pin-fun svg{width:20px;height:20px;display:block;}
+.pin-fun.crawl{
+  border:3px solid var(--indigo);
+  box-shadow:0 2px 6px rgba(0,0,0,.35), 0 0 0 3px #fff;
+}
+.crawl-arrow-wrap{width:22px;height:22px;}
+.crawl-arrow{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--indigo);color:#fff;border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;line-height:1;
+  box-shadow:0 2px 5px rgba(0,0,0,.35);
+  animation:crawl-pulse 1.2s ease-in-out infinite;
+}
+@keyframes crawl-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.leaflet-overlay-pane path.crawl-flow{
+  stroke-dasharray:12 16;
+  animation:crawl-dash 1s linear infinite;
+}
+@keyframes crawl-dash{to{stroke-dashoffset:-28}}
+
+/* ---------- crawl list ---------- */
+.crawl{
+  border:1px solid rgba(30,77,140,.4);border-radius:16px;
+  background:linear-gradient(160deg,rgba(30,77,140,.12),transparent 60%);
+  padding:8px 22px 18px;
+}
+.clist{list-style:none;margin:0;padding:0;}
+.cstop{
+  display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:start;
+  padding:14px 0;border-bottom:1px solid var(--line-soft);
+}
+.cstop:last-of-type{border-bottom:0;}
+.cstop-walk{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--indigo);padding-top:4px;
+}
+.cstop.start .cstop-walk{color:var(--rose);}
+.cstop-n{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;
+}
+.cstop.start .cstop-n{color:var(--rose);}
+.cstop-name{
+  font-family:'Fraunces',Georgia,serif;font-weight:650;
+  font-size:21px;letter-spacing:-.02em;line-height:1.15;display:block;
+  background:none;border:0;padding:0;color:inherit;cursor:pointer;text-align:left;
+}
+.cstop-name:hover{color:var(--gold);}
+.cstop-do{font-size:13.5px;color:var(--muted);margin-top:3px;display:block;}
+.cstop-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px;}
+.crawl-total{
+  margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);
+}
+.crawl-total b{color:#7EB0E8;}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.chip{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;
+  background:transparent;color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;padding:7px 13px;cursor:pointer;transition:.15s;
+}
+.chip:hover{color:var(--paper);border-color:var(--muted);}
+.chip:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#1C1917;font-weight:600;}
+.vote-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin:0 0 18px;}
+
+/* ---------- cards ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;}
+.card{
+  border:1px solid var(--line);border-radius:14px;background:var(--panel);
+  padding:18px;display:flex;flex-direction:column;scroll-margin-top:20px;
+  transition:border-color .2s, transform .2s;
+}
+.card:hover{border-color:#6B625A;}
+.card.flash{border-color:var(--gold);transform:translateY(-2px);}
+.card.home{border-color:rgba(196,59,90,.5);background:linear-gradient(160deg,rgba(196,59,90,.1),var(--panel) 58%);}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.card h3{
+  font-family:'Fraunces',Georgia,serif;font-weight:650;
+  font-size:22px;letter-spacing:-.02em;line-height:1.15;margin:0;
+}
+.badge{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--rose);color:var(--rose);border-radius:999px;padding:3px 8px;white-space:nowrap;
+}
+.dist{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);
+  white-space:nowrap;text-align:right;line-height:1.4;
+}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 12px;}
+.tag{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px 8px;color:var(--muted);
+}
+.tag.cash{border-color:var(--malort);color:var(--malort);}
+.row{margin:0 0 10px;font-size:14.5px;}
+.row .lbl{
+  display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:3px;
+}
+.note{
+  border-left:2px solid var(--gold);background:rgba(224,160,26,.08);
+  padding:10px 12px;border-radius:0 8px 8px 0;font-size:14px;margin:0 0 12px;
+}
+.note .lbl{
+  display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px;
+}
+.card-foot{
+  margin-top:auto;padding-top:12px;border-top:1px solid var(--line-soft);
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+}
+.hours{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);flex:1 1 100%;}
+.mini{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  border:1px solid var(--line);border-radius:999px;padding:6px 11px;
+  background:transparent;color:var(--paper);cursor:pointer;text-decoration:none;transition:.15s;
+}
+.mini:hover{border-color:#7EB0E8;color:#7EB0E8;}
+.mini:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.vote{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--line);border-radius:999px;padding:6px 11px;
+  background:transparent;color:var(--paper);cursor:pointer;transition:.15s;
+}
+.vote:hover{border-color:var(--gold);color:var(--gold);}
+.vote:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.vote.on{border-color:var(--gold);color:var(--gold);background:rgba(224,160,26,.12);}
+.vote:disabled{opacity:.45;cursor:not-allowed;}
+.vote-mark{font-size:10px;line-height:1;}
+.rank{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);display:inline-block;margin-left:8px;
+}
+
+/* ---------- footer ---------- */
+footer{padding:36px 0 56px;color:var(--muted);font-size:13px;text-align:center;border-bottom:0;}
+footer p{margin:0 0 8px;}
+
+@media (max-width:760px){
+  .homebase{grid-template-columns:1fr;}
+  .cstop{grid-template-columns:1fr;gap:4px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;}
+  html{scroll-behavior:auto;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Site">
+      <a class="on" href="index.html">Night 1</a>
+      <a href="night2.html">Night 2</a>
+      <a href="eats.html">Late Night Eats</a>
+      <a href="games.html">Games</a>
+    </nav>
+    <p class="eyebrow">Bachelor party · Chicago · North Side</p>
+    <h1><span class="h1-kicker">The Main Event:</span><br>Steven's Bach Weekend</h1>
+    <p class="sub">Seventeen dives, barcades, bowling alleys and taprooms within striking distance of the house. Tap any spot for the notes.</p>
+    <div class="hq-row">
+      <button type="button" class="addr-chip" data-show="house">HQ · <b>1408 W Belle Plaine Ave</b> · show on map</button>
+      <a class="addr-chip" href="https://www.google.com/maps/search/?api=1&query=1408%20W%20Belle%20Plaine%20Ave%2C%20Chicago%2C%20IL%2060613" target="_blank" rel="noopener">Directions ↗</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="homebase">
+      <svg class="hb-icon" viewBox="0 0 80 80" aria-hidden="true">
+        <rect width="80" height="80" rx="18" fill="#C43B5A"/>
+        <path d="M10 30h60l-8 12H18z" fill="#F4EFE6"/>
+        <path d="M10 28h60v4H10z" fill="#2A1810"/>
+        <rect x="18" y="40" width="44" height="30" rx="2" fill="#2A1810"/>
+        <rect x="23" y="45" width="11" height="11" rx="1" fill="#E0A01A"/>
+        <rect x="46" y="45" width="11" height="11" rx="1" fill="#E0A01A"/>
+        <rect x="36" y="52" width="8" height="18" rx="1" fill="#F4EFE6"/>
+        <path d="M56 36v-4h3v4" stroke="#2A1810" stroke-width="1.6"/>
+        <rect x="52" y="36" width="16" height="11" rx="1.5" fill="#F4EFE6"/>
+        <text x="60" y="44.5" text-anchor="middle" fill="#C43B5A" font-size="7" font-family="IBM Plex Mono,monospace" font-weight="600">BAR</text>
+      </svg>
+      <div>
+        <p class="hb-label">Recommended homebase</p>
+        <p class="hb-name">Ten Cat Tavern</p>
+        <p class="hb-why">If the group splits up, this is where everyone regroups. It's a 10-minute walk from the front door, it has room for twelve, it has something to do besides drink, and nobody has to make a reservation to get in.</p>
+        <ul class="hb-list">
+          <li><b>Walkable</b> — straight shot down Ashland, no Ubers, no one gets stranded.</li>
+          <li><b>Two free pool tables</b> — a bracket runs itself and keeps twelve guys occupied.</li>
+          <li><b>Big patio + cheap beer</b> — spillover space when the bar fills up.</li>
+          <li><b>Open late</b> — 2 a.m. Friday, 3 a.m. Saturday. It works as the meet-up and the fallback.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>The map</h2></div>
+    <p class="sec-note">The house is the big pin. Ten Cat is the tavern. Every other pin is a beer. Turn on the crawl to overlay the walking route.</p>
+    <div class="map-tools">
+      <button class="btn" id="crawlBtn" aria-pressed="false">Show walkable crawl</button>
+      <button class="btn" id="resetBtn">Reset view</button>
+    </div>
+    <div class="map-legend" aria-hidden="true">
+      <span><i class="lg lg-hq"></i> House</span>
+      <span><i class="lg lg-bar"></i> Recommended homebase</span>
+      <span><i class="lg lg-pin"></i> Bar</span>
+      <span><i class="lg lg-crawl"></i> Crawl stop</span>
+    </div>
+    <div id="map"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>The walkable crawl</h2></div>
+    <p class="sec-note">Five stops, no cars. Ends somewhere that's still serving food at 3 a.m.</p>
+    <div class="crawl" id="crawlList"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Every spot</h2></div>
+    <p class="sec-note">Filter by what you're in the mood for, or sort by the group's votes. Distances are from the house.</p>
+    <div class="filters" id="filters" role="group" aria-label="Filter venues"></div>
+    <p class="vote-status" id="voteStatus"></p>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Cash-only spots are flagged. Hit an ATM before Simon's or Big Joe's.</p>
+    <p>Reserve ahead: Southport Lanes · Guthries · Chicago Magic Lounge · Timber Lanes if you bowl.</p>
+    <p>Saturday is Lincoln Square. <a href="night2.html">Night 2</a></p>
+    <p>Hungry after last call? <a href="eats.html">Late Night Eats</a></p>
+    <p>What’s at the house? <a href="games.html">Games</a></p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+const HQ = {lat:41.9558, lng:-87.6643, addr:"1408 W Belle Plaine Ave, Chicago, IL 60613"};
+
+/* Paste your Firebase web app config here to turn on group voting.
+   Enable Anonymous Auth + Realtime Database, then add your github.io
+   host under Authentication → Settings → Authorized domains.
+
+   Database rules:
+   {
+     "rules": {
+       "votes": {
+         "$placeId": {
+           ".read": true,
+           "$uid": {
+             ".write": "auth != null && auth.uid === $uid",
+             ".validate": "newData.isBoolean()"
+           }
+         }
+       }
+     }
+   }
+*/
+const FIREBASE = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: ""
+};
+const votingLive = !!(FIREBASE.apiKey && FIREBASE.databaseURL);
+
+const PLACES = [
+{
+  id:"tencat", n:1, name:"Ten Cat Tavern", homebase:true,
+  addr:"3931 N Ashland Ave", lat:41.9534445, lng:-87.6687924,
+  tags:["Dive","Pool","Patio"], dist:"0.5 mi", trip:"11 min walk",
+  hours:"Fri 4pm–2am · Sat 3pm–3am",
+  vibe:"A 30-year Ravenswood institution — thrift-store couches, rotating local art on the walls, and zero pretense. Loud enough to be fun, dark enough to be forgiving.",
+  fun:"Two free pool tables, a huge back patio with a fire, and a private back room you can rent for the group.",
+  note:"Closest thing to a perfect group dive and your homebase for the weekend. Email ahead about the back room — it's the difference between twelve guys crowding a bar and twelve guys with their own space."
+},
+{
+  id:"keenan", n:2, name:"Keenan O'Reilly's Pub",
+  addr:"3916 N Ashland Ave", lat:41.9530032, lng:-87.6692899,
+  tags:["Dive","Pool","Ping pong"], dist:"0.5 mi", trip:"11 min walk",
+  hours:"Fri 5pm–2am · Sat 3pm–3am",
+  vibe:"Old-school Chicago corner bar with nothing to prove. Cheap pours, a jukebox, and bartenders who'll remember your order by round three.",
+  fun:"Big back room with both a pool table and a ping pong table — the best two-game setup on the list.",
+  note:"Directly across Ashland from Ten Cat, so it's a two-stop crawl with a 60-second commute. Open to 3 a.m. Saturday."
+},
+{
+  id:"guthries", n:3, name:"Guthries Tavern",
+  addr:"1300 W Addison St", lat:41.9473109, lng:-87.6617549,
+  tags:["Board games","Craft beer"], dist:"1.0 mi", trip:"20 min walk",
+  hours:"Fri 3pm–2am · Sat 11am–3am",
+  vibe:"A 1980s Wrigleyville holdout that never got glossed up. Wood, warm light, and a wall of board games instead of TVs.",
+  fun:"Pick anything off the game shelf, work through a genuinely good craft list, and grab free hot dogs on Cubs game days.",
+  note:"This is the board game bar you're after. Tables get reserved in advance and twelve guys need two of them — call ahead."
+},
+{
+  id:"timber", n:4, name:"Timber Lanes",
+  addr:"1851 W Irving Park Rd", lat:41.9539729, lng:-87.6761141,
+  tags:["Bowling","Darts","Cheap"], dist:"0.8 mi", trip:"17 min walk",
+  hours:"Fri 12pm–1am · Sat 10am–12am",
+  vibe:"Eight lanes in a 1940s basement with real wood, overhead projector scoring you do by hand, and drinks that cost what drinks used to cost.",
+  fun:"Bowl badly, keep score badly, throw darts. They host private parties and the whole place feels rented even when it isn't.",
+  note:"The single best group activity here. Eight lanes absorbs twelve guys better than anything else on this list — book online now, it's small and it fills up."
+},
+{
+  id:"carols", n:5, name:"Carol's Pub",
+  addr:"4659 N Clark St", lat:41.9669152, lng:-87.6669024,
+  tags:["Dive","Live music","Food"], dist:"0.9 mi", trip:"19 min walk",
+  hours:"Fri 2pm–2am · Sat 12pm–3am",
+  vibe:"Uptown's honky-tonk since the 1970s, reopened with the grit intact. Neon, a real stage, and a crowd that's half regulars half converts.",
+  fun:"Live country bands most weekend nights, a solid burger, and karaoke and trivia on off nights.",
+  note:"Loud and rowdy in the best way, and open until 3 a.m. Saturday. Best late-night stop that isn't just another bar."
+},
+{
+  id:"globe", n:6, name:"The Globe Pub",
+  addr:"1934 W Irving Park Rd", lat:41.9543896, lng:-87.6777464,
+  tags:["Sports","Food","Brunch"], dist:"0.9 mi", trip:"19 min walk",
+  hours:"Fri 11am–2am · Sat 8am–2am",
+  vibe:"The neighborhood's serious sports bar — TVs on every wall, a real kitchen, and a devoted soccer crowd that shows up at 8 a.m. for European kickoffs.",
+  fun:"Put any game on, work through fish and chips and wings, and stay for the weekend brunch if the night ran long.",
+  note:"Best daytime option if you need to feed twelve guys and put a game on. Opens at 8 a.m. Saturday, which is either a feature or a warning."
+},
+{
+  id:"driftwood", n:7, name:"Driftwood",
+  addr:"1021 W Montrose Ave", lat:41.96166, lng:-87.6557049,
+  tags:["Dive","Pool","Darts"], dist:"0.8 mi", trip:"17 min walk",
+  hours:"Fri & Sat 5pm–2am · Closed Sun",
+  vibe:"Tiny nautical-themed Uptown dive run by owners who treat the place like their living room. Cans and bottles only, no taps, no attitude.",
+  fun:"Dollar pool, free darts, and a ring-the-bull hook game on the wall. Ask about the mystery shot.",
+  note:"Best game-per-square-foot ratio in the neighborhood. It's small though — twelve guys will effectively be the whole bar, so go early or go in halves."
+},
+{
+  id:"oakwood", n:8, name:"Oakwood 83",
+  addr:"1959 W Montrose Ave", lat:41.9612857, lng:-87.6783317,
+  tags:["Dive","Late night","Food"], dist:"1.1 mi", trip:"22 min walk",
+  hours:"Fri 7pm–4am · Sat 7pm–5am",
+  vibe:"An untouched vintage time capsule with a late license and a kitchen that doesn't quit. Wood paneling, old signage, a bartender who's seen it all.",
+  fun:"Order saganaki, potato skins or a New York strip at 2 a.m. and settle in for the part of the night nobody remembers.",
+  note:"This is your closer, not your opener. Open to 5 a.m. Saturday with real food — the reason the crawl ends here."
+},
+{
+  id:"southport", n:9, name:"Southport Lanes & Billiards",
+  addr:"3325 N Southport Ave", lat:41.9423815, lng:-87.6636694,
+  tags:["Bowling","Billiards","Food"], dist:"1.0 mi", trip:"20 min walk",
+  hours:"Call ahead — hours vary",
+  vibe:"A 1920s bar with four bowling lanes where a human being still sets the pins by hand behind the deck. Big separate billiards room next door.",
+  fun:"Roll a tip down the gutter and the pinsetter will nudge a spare your way. Or skip bowling and take over the pool room.",
+  note:"The hand-set lanes are a genuinely novel thing to show a group. Only four lanes though, so reserve — the billiards room is the backup that handles a crowd."
+},
+{
+  id:"replay", n:10, name:"Replay Lakeview",
+  addr:"3439 N Halsted St", lat:41.9447863, lng:-87.6492256,
+  tags:["Arcade","Free play","Cheap"], dist:"1.4 mi", trip:"8 min drive",
+  hours:"Fri 12pm–2am · Sat 12pm–3am",
+  vibe:"Retro barcade that redecorates the entire room around a rotating pop-up theme. Twenty taps, cheap drinks, free popcorn.",
+  fun:"Most of the cabinets are free play — no quarters, no tokens. Bring singles for the pinball and premium machines.",
+  note:"Closest legit barcade to the house. Opens at noon on weekends, which makes it a good afternoon stop before the night gets going."
+},
+{
+  id:"simons", n:11, name:"Simon's Tavern",
+  addr:"5210 N Clark St", lat:41.9765833, lng:-87.6686944,
+  tags:["Dive","Historic","Cash only"], dist:"1.9 mi", trip:"10 min drive",
+  hours:"Daily 11am–2am",
+  vibe:"Iconic historic Andersonville dive with Prohibition-era speakeasy roots, nautical murals, and cozy wood paneling.",
+  fun:"Sip their famous house-made hot or slushie glögg, select tunes on the jukebox, and relax in a booth with friends.",
+  note:"Ninety-plus years old and still cash only — hit an ATM first. The fish-shaped check-cashing window behind the bar is a leftover from its speakeasy days."
+},
+{
+  id:"ksdugout", n:12, name:"K's Dugout",
+  addr:"1930 W Foster Ave", lat:41.9762243, lng:-87.6777092,
+  tags:["Dive","Pool","Darts","Sports"], dist:"2.2 mi", trip:"11 min drive",
+  hours:"Daily 7am–2am",
+  vibe:"Unpretentious, straightforward neighborhood dive on Foster Avenue with affordable drinks and a friendly local crowd.",
+  fun:"Play a round of darts or pool, catch a game on TV, and enjoy casual drinks in a low-key atmosphere.",
+  note:"Two blocks from Big Joe's, so pair them. Pool is free on Sundays and a dollar otherwise."
+},
+{
+  id:"magic", n:13, name:"Chicago Magic Lounge",
+  addr:"5050 N Clark St", lat:41.973927, lng:-87.66835,
+  tags:["Show","Cocktails","Ticketed"], dist:"1.8 mi", trip:"9 min drive",
+  hours:"Fri & Sat 5pm–2am · Shows ticketed",
+  vibe:"Speakeasy-style venue hidden behind a secret laundromat entrance, opening into an art deco theater and bar dedicated to Chicago-style close-up magic.",
+  fun:"Enjoy table-side sleight-of-hand tricks from magicians while sipping craft cocktails, then catch a mainstage show in the cabaret theater.",
+  note:"The one thing on this list you absolutely cannot walk into — buy twelve tickets well in advance. Sit close; the whole point is the close-up work."
+},
+{
+  id:"bigjoes", n:14, name:"Big Joe's",
+  addr:"1818 W Foster Ave", lat:41.976249, lng:-87.6755466,
+  tags:["Dive","Turtle races","Cash only"], dist:"2.2 mi", trip:"11 min drive",
+  hours:"Fri 1pm–2am · Sat 12pm–2am",
+  vibe:"Legendary, no-frills neighborhood dive bar widely known for its welcoming vibe and unique weekly traditions.",
+  fun:"Attend their famous Friday night live Turtle Races to cheer on a racing turtle, or play pool and darts over cheap draft beers.",
+  note:"Friday turtle races are the move — drinks earn you raffle tickets and the winners get to jockey. Get there by 7:30 to claim seats, and bring cash."
+},
+{
+  id:"halfacre", n:16, name:"Half Acre Beer Co",
+  addr:"2050 W Balmoral Ave", lat:41.980193, lng:-87.681371,
+  tags:["Brewery","Beer garden","Food"], dist:"2.6 mi", trip:"13 min drive",
+  hours:"Fri & Sat 11am–10pm · Sun 11am–7pm",
+  vibe:"Major Chicago craft brewery featuring an expansive taproom, full kitchen, and spacious beer garden in Bowmanville.",
+  fun:"Sample draft IPAs and seasonal beers, sit in the outdoor beer garden, and order burgers and shareables.",
+  note:"Best afternoon anchor on the list — real kitchen, real space for twelve, and it closes early enough to still be stop one. Get there before the weekend rush."
+},
+{
+  id:"spiteful", n:17, name:"Spiteful Brewing Tap Room",
+  addr:"2024 W Balmoral Ave", lat:41.9798007, lng:-87.6806468,
+  tags:["Brewery","Darts","Board games"], dist:"2.6 mi", trip:"13 min drive",
+  hours:"Fri 2–11pm · Sat 12–11pm · Sun 12–8pm",
+  vibe:"Intimate, friendly craft brewery taproom located right next door to Half Acre with an industrial, relaxed feel.",
+  fun:"Order a flight of house-brewed IPAs or porters, play steel-tip darts or board games, and pair it with a visit to Half Acre next door.",
+  note:"Literally next door to Half Acre — do both in one trip. Garage doors open in good weather, and they'll rent the space for a private event if you want a home base up north."
+},
+{
+  id:"longroom", n:18, name:"The Long Room",
+  addr:"1612 W Irving Park Rd", lat:41.9544865, lng:-87.6696991,
+  tags:["Dive","Patio","Food"], dist:"0.4 mi", trip:"10 min walk",
+  hours:"Fri 8am–2am · Sat 10am–2am",
+  vibe:"A Ravenswood tavern on Irving Park since 2000 — sixty feet of bar, no TVs, and a room that turns from coffee shop to night bar without getting precious about it.",
+  fun:"Claim the enclosed backyard, book the back room for the group, and hit the photobooth. Rotating kitchen partners mean there's actual food, not just pretzels.",
+  note:"Sits right at Ashland and Irving Park, so it's the natural third stop once you leave Keenan's. Walk-in is fine; email ahead if you want the back room locked down for twelve."
+}
+];
+
+const CRAWL = [
+  {id:"tencat",   walkMin:11, do:"Claim the back room, start the pool bracket"},
+  {id:"keenan",   walkMin:1,  do:"Straight across Ashland — ping pong"},
+  {id:"longroom", walkMin:4,  do:"Backyard or book the back room, grab food"},
+  {id:"globe",    walkMin:8,  do:"West on Irving Park — late game on the TVs"},
+  {id:"oakwood",  walkMin:13, do:"Open to 5 a.m. Saturday, kitchen open late"}
+];
+const CRAWL_IDS = CRAWL.map(s=>s.id);
+
+const ROUTE = [
+  [41.9558,-87.6643],[41.9558,-87.6688],
+  [41.9534,-87.6688],[41.9530,-87.6693],
+  [41.9545,-87.6697],[41.9544,-87.6777],
+  [41.9544,-87.6783],[41.9613,-87.6783]
+];
+
+const FILTERS = [
+  {label:"All 17", test:()=>true},
+  {label:"Most voted", sort:"votes"},
+  {label:"Dive bars", test:p=>p.tags.includes("Dive")},
+  {label:"Games & arcade", test:p=>p.tags.some(t=>["Pool","Ping pong","Darts","Board games","Arcade","Free play","Billiards","Turtle races"].includes(t))},
+  {label:"Bowling", test:p=>p.tags.includes("Bowling")},
+  {label:"Sports & TVs", test:p=>p.tags.includes("Sports")},
+  {label:"Breweries", test:p=>p.tags.includes("Brewery")},
+  {label:"Food & shows", test:p=>p.tags.some(t=>["Food","Show","Brunch"].includes(t))},
+  {label:"Walkable", test:p=>p.trip.includes("walk")}
+];
+
+let voteCounts = {};
+let myVotes = {};
+let uid = null;
+let currentFilter = FILTERS[0];
+
+function tally(id){ return voteCounts[id]||0; }
+function voted(id){ return !!myVotes[id]; }
+function isCrawlPlace(id){ return CRAWL_IDS.includes(id); }
+
+function placeById(id){ return PLACES.find(p=>p.id===id); }
+
+/* ---------- map ---------- */
+const map = L.map('map',{scrollWheelZoom:false}).setView([41.9600,-87.6700],14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap contributors &copy; CARTO', maxZoom:20
+}).addTo(map);
+map.once('focus',()=>map.scrollWheelZoom.enable());
+
+const hqIcon = L.divIcon({
+  className:'', iconSize:[56,68], iconAnchor:[28,64], popupAnchor:[0,-58],
+  html:`<div class="pin-hq"><svg width="56" height="68" viewBox="0 0 56 68" aria-hidden="true">
+    <path d="M28 65s-21-19-21-36a21 21 0 1 1 42 0c0 17-21 36-21 36z" fill="#fff" stroke="#1C1917" stroke-width="2.4"/>
+    <path d="M16 31.5l12-10 12 10V44H16z" fill="#C45C26"/>
+    <path d="M16 32.2l12-10 12 10" fill="none" stroke="#1C1917" stroke-width="1.6" stroke-linejoin="round"/>
+    <rect x="24" y="35.5" width="8" height="8.5" rx="0.6" fill="#fff"/>
+    <rect x="18.5" y="34" width="6" height="5" fill="#F4EFE6"/>
+    <rect x="31.5" y="34" width="6" height="5" fill="#F4EFE6"/>
+  </svg></div>`
+});
+const barIcon = L.divIcon({
+  className:'', iconSize:[44,44], iconAnchor:[22,22], popupAnchor:[0,-22],
+  html:`<div class="pin-bar"><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+    <rect x="1" y="1" width="42" height="42" rx="10" fill="#C43B5A" stroke="#fff" stroke-width="2"/>
+    <path d="M8 16h28l-4 6H12z" fill="#F4EFE6"/>
+    <path d="M8 15h28v2H8z" fill="#2A1810"/>
+    <rect x="12" y="21" width="20" height="15" rx="1" fill="#2A1810"/>
+    <rect x="14.5" y="23.5" width="5" height="5" rx=".6" fill="#E0A01A"/>
+    <rect x="24.5" y="23.5" width="5" height="5" rx=".6" fill="#E0A01A"/>
+    <rect x="19.5" y="27" width="5" height="9" rx=".6" fill="#F4EFE6"/>
+  </svg></div>`
+});
+
+const BEER_GLYPH = '<svg viewBox="0 0 24 24" fill="#F4EFE6" aria-hidden="true"><path d="M7.2 6.5h9.2l-1.2 13.2H8.4z"/><path d="M7.2 6.5c0-2.2 2-3.8 4.6-3.8s4.6 1.6 4.6 3.8"/><path d="M16.6 9.2c1.8.3 3 1.3 3 2.6 0 1.5-1.7 2.8-3.8 2.8" fill="none" stroke="#F4EFE6" stroke-width="1.7"/><path d="M8.6 6.5c.4-1.3 1.5-2.1 2.8-2.1"/></svg>';
+
+function placeIcon(crawl){
+  return L.divIcon({
+    className:'', iconSize:[36,36], iconAnchor:[18,18], popupAnchor:[0,-18],
+    html:`<div class="pin-fun${crawl?' crawl':''}">${BEER_GLYPH}</div>`
+  });
+}
+
+const markers = {};
+const hqMarker = L.marker([HQ.lat,HQ.lng],{icon:hqIcon, title:"The house", zIndexOffset:3000})
+ .addTo(map)
+ .bindPopup(`<span class="pop-name">The House</span><span class="pop-meta">${HQ.addr}</span><p class="pop-note">Start and end here. The Airbnb is the biggest pin on the map.</p>`);
+markers.house = hqMarker;
+
+function gmapsLink(p){
+  return "https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(HQ.addr)
+    +"&destination="+encodeURIComponent(p.name+", "+p.addr+", Chicago, IL")
+    +"&travelmode="+(p.trip.includes("walk")?"walking":"driving");
+}
+function hqMapsLink(){
+  return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(HQ.addr);
+}
+
+function neighborhoodBounds(){
+  const south = placeById("southport");
+  const north = placeById("magic");
+  return L.latLngBounds([
+    [HQ.lat, HQ.lng],
+    [south.lat, south.lng],
+    [north.lat, north.lng]
+  ]);
+}
+function resetView(){
+  map.closePopup();
+  map.fitBounds(neighborhoodBounds().pad(0.14));
+}
+
+function renderCrawl(){
+  const totalMin = CRAWL.reduce((n,s)=>n+s.walkMin,0);
+  const house = `<li class="cstop start">
+    <span class="cstop-walk">Start</span>
+    <div>
+      <span class="cstop-n">The house</span>
+      <button class="cstop-name" type="button" data-show="house">The House</button>
+      <span class="cstop-do">1408 W Belle Plaine — pregame here</span>
+      <div class="cstop-actions">
+        <button class="mini" type="button" data-show="house">Show on map</button>
+        <a class="mini" href="${hqMapsLink()}" target="_blank" rel="noopener">Directions ↗</a>
+      </div>
+    </div>
+  </li>`;
+  const stops = CRAWL.map((s,i)=>{
+    const p = placeById(s.id);
+    const label = i===CRAWL.length-1 ? "Last call" : "Stop "+String(i+1).padStart(2,"0");
+    return `<li class="cstop">
+      <span class="cstop-walk">${s.walkMin} min walk</span>
+      <div>
+        <span class="cstop-n">${label}</span>
+        <button class="cstop-name" type="button" data-jump="${p.id}">${p.name}</button>
+        <span class="cstop-do">${s.do}</span>
+        <div class="cstop-actions">
+          <button class="mini" type="button" data-jump="${p.id}">Notes</button>
+          <button class="mini" type="button" data-show="${p.id}">Show on map</button>
+          <a class="mini" href="${gmapsLink(p)}" target="_blank" rel="noopener">Directions ↗</a>
+        </div>
+      </div>
+    </li>`;
+  }).join("");
+  document.getElementById("crawlList").innerHTML =
+    `<ol class="clist">${house}${stops}</ol>
+     <p class="crawl-total">TOTAL ON FOOT <b>≈ ${totalMin} min / 1.6 mi</b> · ALL FIVE STOPS ARE WALK-INS</p>`;
+}
+renderCrawl();
+
+PLACES.forEach(p=>{
+  const m = L.marker([p.lat,p.lng],{
+    icon: p.homebase ? barIcon : placeIcon(false),
+    title: p.name,
+    zIndexOffset: p.homebase ? 2000 : 1000
+  }).addTo(map);
+  m.bindPopup(
+    `<span class="pop-name">${p.name}</span>
+     <span class="pop-meta">${p.addr} · ${p.dist} · ${p.trip}</span>
+     <p class="pop-note">${p.note}</p>
+     <button class="pop-link" data-jump="${p.id}">Read the full entry ↓</button>`
+  );
+  markers[p.id]=m;
+});
+
+const routeHalo = L.polyline(ROUTE,{color:'#fff', weight:10, opacity:.9, lineJoin:'round'});
+const routeLine = L.polyline(ROUTE,{
+  color:'#1E4D8C', weight:4, opacity:1, dashArray:'12 16', lineJoin:'round'
+});
+
+const crawlArrows = [];
+function bearing(a,b){
+  return Math.atan2(b[1]-a[1], b[0]-a[0]) * 180 / Math.PI;
+}
+function showCrawlFlow(){
+  hideCrawlFlow();
+  for(let i=0;i<ROUTE.length-1;i++){
+    const a=ROUTE[i], b=ROUTE[i+1];
+    if(Math.hypot(b[0]-a[0], b[1]-a[1]) < 0.0014) continue;
+    const deg = bearing(a,b);
+    const icon = L.divIcon({
+      className:'', iconSize:[22,22], iconAnchor:[11,11],
+      html:`<div class="crawl-arrow-wrap" style="transform:rotate(${deg}deg)"><div class="crawl-arrow">▲</div></div>`
+    });
+    crawlArrows.push(L.marker([(a[0]+b[0])/2,(a[1]+b[1])/2],{
+      icon, interactive:false, zIndexOffset:500, keyboard:false
+    }).addTo(map));
+  }
+  requestAnimationFrame(()=>{
+    const el = routeLine.getElement();
+    if(el) el.classList.add('crawl-flow');
+  });
+}
+function hideCrawlFlow(){
+  crawlArrows.splice(0).forEach(m=>map.removeLayer(m));
+  const el = routeLine.getElement();
+  if(el) el.classList.remove('crawl-flow');
+}
+
+let crawlOn=false;
+function refreshCrawlPins(){
+  PLACES.forEach(p=>{
+    if(p.homebase) return;
+    const onCrawl = crawlOn && isCrawlPlace(p.id);
+    markers[p.id].setIcon(placeIcon(onCrawl));
+    markers[p.id].setZIndexOffset(onCrawl ? 800 : 1000);
+  });
+}
+const crawlBtn=document.getElementById('crawlBtn');
+crawlBtn.addEventListener('click',()=>{
+  crawlOn=!crawlOn;
+  crawlBtn.classList.toggle('on',crawlOn);
+  crawlBtn.setAttribute('aria-pressed',String(crawlOn));
+  crawlBtn.textContent = crawlOn ? 'Hide walkable crawl' : 'Show walkable crawl';
+  refreshCrawlPins();
+  if(crawlOn){
+    routeHalo.addTo(map); routeLine.addTo(map);
+    showCrawlFlow();
+    map.fitBounds(routeLine.getBounds().pad(0.25));
+  }else{
+    hideCrawlFlow();
+    map.removeLayer(routeLine); map.removeLayer(routeHalo);
+    resetView();
+  }
+});
+document.getElementById('resetBtn').addEventListener('click', resetView);
+resetView();
+
+/* ---------- cards ---------- */
+const grid=document.getElementById('grid');
+const voteStatus=document.getElementById('voteStatus');
+
+function rankedList(){
+  return [...PLACES].sort((a,b)=> tally(b.id)-tally(a.id) || a.name.localeCompare(b.name));
+}
+
+function cardHTML(p, rank){
+  const mine = voted(p.id);
+  const count = tally(p.id);
+  const rankMark = rank ? `<span class="rank">#${rank}</span>` : "";
+  return `<article class="card${p.homebase?' home':''}" id="card-${p.id}">
+    <div class="card-top">
+      <div>
+        <h3>${p.name}${rankMark}</h3>
+        ${p.homebase?'<span class="badge">Recommended homebase</span>':''}
+      </div>
+      <div class="dist">${p.dist}<br>${p.trip}</div>
+    </div>
+    <div class="tags">${p.tags.map(t=>`<span class="tag${t==='Cash only'?' cash':''}">${t}</span>`).join('')}</div>
+    <p class="row"><span class="lbl">The vibe</span>${p.vibe}</p>
+    <p class="row"><span class="lbl">What to do</span>${p.fun}</p>
+    <p class="note"><span class="lbl">Note</span>${p.note}</p>
+    <div class="card-foot">
+      <span class="hours">${p.addr} · ${p.hours}</span>
+      <button class="vote${mine?' on':''}" data-vote="${p.id}" ${votingLive?'':'disabled'}
+        aria-pressed="${mine}" title="${votingLive?(mine?'Remove your vote':'Vote for this spot'):'Voting not live yet'}">
+        <span class="vote-mark">▲</span>
+        <span class="vote-n">${count}</span>
+      </button>
+      <button class="mini" data-show="${p.id}">Show on map</button>
+      <a class="mini" href="${gmapsLink(p)}" target="_blank" rel="noopener">Directions ↗</a>
+    </div>
+  </article>`;
+}
+
+function visibleList(){
+  if(currentFilter.sort==="votes") return rankedList();
+  return PLACES.filter(currentFilter.test);
+}
+
+function render(list){
+  const ranking = currentFilter.sort==="votes";
+  grid.innerHTML = list.map((p,i)=>cardHTML(p, ranking ? i+1 : 0)).join("");
+}
+
+function applyFilter(){
+  render(visibleList());
+}
+
+applyFilter();
+
+const filterBar=document.getElementById('filters');
+FILTERS.forEach((f,i)=>{
+  const b=document.createElement('button');
+  b.className='chip'+(i===0?' on':'');
+  b.textContent=f.label;
+  b.addEventListener('click',()=>{
+    filterBar.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+    currentFilter = f;
+    applyFilter();
+  });
+  filterBar.appendChild(b);
+});
+
+voteStatus.textContent = votingLive
+  ? "Tap ▲ on a card to vote. One vote per spot per phone — tap again to take it back."
+  : "Voting is not live yet. Add a Firebase config at the top of the script to turn on group tallies.";
+
+function focusPlace(id){
+  const target = id==="house" ? HQ : placeById(id);
+  if(!target) return;
+  document.getElementById('map').scrollIntoView({block:'center'});
+  map.setView([target.lat,target.lng],17,{animate:true});
+  markers[id].openPopup();
+}
+function jumpToCard(id){
+  const el=document.getElementById('card-'+id);
+  if(!el){
+    currentFilter = FILTERS[0];
+    filterBar.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0));
+    applyFilter();
+  }
+  const card=document.getElementById('card-'+id);
+  if(!card) return;
+  card.scrollIntoView({block:'center'});
+  card.classList.add('flash');
+  setTimeout(()=>card.classList.remove('flash'),1600);
+}
+
+async function toggleVote(id){
+  if(!votingLive || !uid) return;
+  const ref = firebase.database().ref("votes/"+id+"/"+uid);
+  try{
+    if(voted(id)) await ref.remove();
+    else await ref.set(true);
+  }catch(err){
+    console.warn("Vote failed", err);
+  }
+}
+
+document.addEventListener('click',e=>{
+  const show=e.target.closest('[data-show]');
+  if(show) focusPlace(show.dataset.show);
+  const jump=e.target.closest('[data-jump]');
+  if(jump){ map.closePopup(); jumpToCard(jump.dataset.jump); }
+  const voteBtn=e.target.closest('[data-vote]');
+  if(voteBtn && !voteBtn.disabled) toggleVote(voteBtn.dataset.vote);
+});
+
+function ingestVotes(data){
+  voteCounts = {};
+  myVotes = {};
+  Object.keys(data||{}).forEach(placeId=>{
+    const voters = data[placeId]||{};
+    voteCounts[placeId] = Object.keys(voters).filter(k=>voters[k]).length;
+    if(uid && voters[uid]) myVotes[placeId] = true;
+  });
+  applyFilter();
+}
+
+if(votingLive){
+  try{
+    firebase.initializeApp(FIREBASE);
+    firebase.auth().signInAnonymously()
+      .then(cred=>{
+        uid = cred.user.uid;
+        firebase.database().ref("votes").on("value", snap=>ingestVotes(snap.val()));
+      })
+      .catch(err=>{
+        console.warn("Firebase auth failed", err);
+        voteStatus.textContent = "Voting could not start. Check the Firebase config and authorized domains.";
+      });
+  }catch(err){
+    console.warn("Firebase init failed", err);
+    voteStatus.textContent = "Voting could not start. Check the Firebase config.";
+  }
+}
+</script>
+</body>
+</html>

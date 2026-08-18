@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Night 2: Lincoln Square</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;0,9..144,700;1,9..144,500&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#141210;
+  --panel:#1E1B18;
+  --panel2:#282421;
+  --line:#3F3832;
+  --line-soft:#2C2824;
+  --paper:#F4EFE6;
+  --muted:#9A9188;
+  --gold:#E0A01A;
+  --rose:#C43B5A;
+  --indigo:#1E4D8C;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'Figtree',system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:#7EB0E8;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px;}
+
+header{
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#1A1714,#141210);
+  padding:40px 0 32px;
+  text-align:center;
+}
+.site-nav{
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 18px;
+}
+.site-nav a{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;text-decoration:none;
+  border:1px solid var(--line);border-radius:999px;
+  padding:6px 14px;color:var(--muted);
+}
+.site-nav a:hover{color:var(--paper);border-color:var(--muted);}
+.site-nav a.on{border-color:var(--gold);color:var(--gold);}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 12px;
+}
+h1{
+  font-family:'Bangers',Impact,sans-serif;
+  font-weight:400;
+  font-size:clamp(36px,7.2vw,68px);
+  line-height:1.05;
+  margin:0;
+  color:var(--paper);
+  letter-spacing:.03em;
+}
+h1 .h1-kicker{color:var(--gold);}
+.sub{margin:14px auto 0;max-width:560px;color:var(--muted);font-size:15.5px;}
+.hq-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;}
+.addr-chip{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1px solid var(--line);background:var(--panel);
+  border-radius:999px;padding:8px 16px;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--paper);
+  cursor:pointer;text-decoration:none;transition:.15s;
+  appearance:none;-webkit-appearance:none;
+}
+.addr-chip:hover{border-color:var(--gold);color:var(--paper);}
+.addr-chip b{color:var(--gold);font-weight:600;}
+
+section{padding:40px 0;border-bottom:1px solid var(--line-soft);}
+.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+h2{
+  font-family:'Bangers',Impact,sans-serif;font-weight:400;
+  font-size:clamp(28px,4.2vw,42px);letter-spacing:.04em;text-transform:uppercase;
+  margin:0;color:var(--paper);
+}
+.sec-note{color:var(--muted);font-size:14.5px;margin:0 0 20px;max-width:640px;}
+
+.homebase{
+  display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;
+  border:1px solid rgba(224,160,26,.4);
+  border-radius:16px;
+  background:linear-gradient(160deg,rgba(224,160,26,.12),transparent 62%);
+  padding:22px;
+}
+.hb-icon{width:72px;height:72px;flex:none;border-radius:16px;}
+.hb-label{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);margin:0 0 6px;
+}
+.hb-name{
+  font-family:'Bangers',Impact,sans-serif;font-weight:400;
+  font-size:clamp(28px,4.2vw,42px);letter-spacing:.04em;text-transform:uppercase;
+  margin:0 0 10px;
+}
+.hb-why{margin:0 0 14px;color:var(--paper);}
+.hb-list{margin:0;padding-left:18px;color:var(--muted);font-size:14.5px;}
+.hb-list li{margin-bottom:5px;}
+.hb-list b{color:var(--paper);font-weight:600;}
+
+.map-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.btn{
+  font-family:'Figtree',sans-serif;font-weight:600;font-size:14px;
+  background:var(--panel2);color:var(--paper);
+  border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;cursor:pointer;transition:.15s;
+}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.btn.on{background:var(--indigo);border-color:var(--indigo);color:#fff;}
+.map-legend{
+  display:flex;flex-wrap:wrap;gap:14px 18px;margin:0 0 12px;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
+}
+.map-legend span{display:inline-flex;align-items:center;gap:7px;}
+.lg{
+  width:16px;height:16px;border-radius:50%;display:inline-block;flex:none;
+  box-shadow:0 0 0 2px #fff, 0 1px 2px rgba(0,0,0,.25);
+}
+.lg-hq{background:#fff;border:1.5px solid #1C1917;border-radius:5px;}
+.lg-bar{background:var(--rose);border-radius:5px;}
+.lg-pin{background:#3A322C;border:1.5px solid var(--gold);border-radius:5px;}
+.lg-crawl{background:#fff;border:2px solid var(--indigo);}
+#map{
+  height:min(66vh,560px);min-height:380px;
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#d6e4d0;
+}
+.leaflet-container{background:#d6e4d0;font-family:'Figtree',sans-serif;}
+.leaflet-div-icon{background:transparent;border:0;}
+.leaflet-popup-content-wrapper{
+  background:var(--panel);color:var(--paper);border:1px solid var(--line);
+  border-radius:12px;box-shadow:0 12px 34px rgba(0,0,0,.45);
+}
+.leaflet-popup-tip{background:var(--panel);border:1px solid var(--line);}
+.leaflet-popup-content{margin:14px 16px;line-height:1.5;}
+.leaflet-popup-close-button{color:var(--muted)!important;}
+.leaflet-control-attribution{background:rgba(255,255,255,.78)!important;color:#5c5c5c!important;font-size:10px!important;}
+.leaflet-control-attribution a{color:#3a3a3a!important;}
+.pop-name{font-family:'Fraunces',Georgia,serif;font-weight:650;font-size:20px;letter-spacing:-.02em;display:block;margin-bottom:2px;}
+.pop-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);display:block;margin-bottom:8px;}
+.pop-note{font-size:13.5px;margin:0 0 10px;}
+.pop-link{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;background:none;border:0;color:var(--gold);cursor:pointer;padding:0;text-decoration:underline;}
+
+.pin-hq{width:56px;height:68px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));}
+.pin-bar{width:44px;height:44px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3));}
+.pin-fun{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:#3A322C;border:2px solid var(--gold);
+  box-shadow:0 1px 4px rgba(0,0,0,.35), 0 0 0 2px #fff;
+}
+.pin-fun svg{width:20px;height:20px;display:block;}
+.pin-fun.crawl{
+  border:3px solid var(--indigo);
+  box-shadow:0 2px 6px rgba(0,0,0,.35), 0 0 0 3px #fff;
+}
+.crawl-arrow-wrap{width:22px;height:22px;}
+.crawl-arrow{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--indigo);color:#fff;border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;line-height:1;
+  box-shadow:0 2px 5px rgba(0,0,0,.35);
+  animation:crawl-pulse 1.2s ease-in-out infinite;
+}
+@keyframes crawl-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.leaflet-overlay-pane path.crawl-flow{
+  stroke-dasharray:12 16;
+  animation:crawl-dash 1s linear infinite;
+}
+@keyframes crawl-dash{to{stroke-dashoffset:-28}}
+
+.crawl{
+  border:1px solid rgba(30,77,140,.4);border-radius:16px;
+  background:linear-gradient(160deg,rgba(30,77,140,.12),transparent 60%);
+  padding:8px 22px 18px;
+}
+.clist{list-style:none;margin:0;padding:0;}
+.cstop{
+  display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:start;
+  padding:14px 0;border-bottom:1px solid var(--line-soft);
+}
+.cstop:last-of-type{border-bottom:0;}
+.cstop-walk{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--indigo);padding-top:4px;
+}
+.cstop.start .cstop-walk{color:var(--gold);}
+.cstop-n{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;
+}
+.cstop.start .cstop-n{color:var(--gold);}
+.cstop-name{
+  font-family:'Fraunces',Georgia,serif;font-weight:650;
+  font-size:21px;letter-spacing:-.02em;line-height:1.15;display:block;
+  background:none;border:0;padding:0;color:inherit;cursor:pointer;text-align:left;
+}
+.cstop-name:hover{color:var(--gold);}
+.cstop-do{font-size:13.5px;color:var(--muted);margin-top:3px;display:block;}
+.cstop-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px;}
+.crawl-total{
+  margin:8px 0 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);
+}
+.crawl-total b{color:#7EB0E8;}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.chip{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;
+  background:transparent;color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;padding:7px 13px;cursor:pointer;transition:.15s;
+}
+.chip:hover{color:var(--paper);border-color:var(--muted);}
+.chip:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#1C1917;font-weight:600;}
+.vote-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin:0 0 18px;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;}
+.card{
+  border:1px solid var(--line);border-radius:14px;background:var(--panel);
+  padding:18px;display:flex;flex-direction:column;scroll-margin-top:20px;
+  transition:border-color .2s, transform .2s;
+}
+.card:hover{border-color:#6B625A;}
+.card.flash{border-color:var(--gold);transform:translateY(-2px);}
+.card.home{border-color:rgba(196,59,90,.5);background:linear-gradient(160deg,rgba(196,59,90,.1),var(--panel) 58%);}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.card h3{
+  font-family:'Fraunces',Georgia,serif;font-weight:650;
+  font-size:22px;letter-spacing:-.02em;line-height:1.15;margin:0;
+}
+.badge{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--rose);color:var(--rose);border-radius:999px;padding:3px 8px;white-space:nowrap;
+}
+.dist{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);
+  white-space:nowrap;text-align:right;line-height:1.4;
+}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 12px;}
+.tag{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px 8px;color:var(--muted);
+}
+.row{margin:0 0 10px;font-size:14.5px;}
+.row .lbl{
+  display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:3px;
+}
+.note{
+  border-left:2px solid var(--gold);background:rgba(224,160,26,.08);
+  padding:10px 12px;border-radius:0 8px 8px 0;font-size:14px;margin:0 0 12px;
+}
+.note .lbl{
+  display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px;
+}
+.card-foot{
+  margin-top:auto;padding-top:12px;border-top:1px solid var(--line-soft);
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+}
+.hours{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);flex:1 1 100%;}
+.mini{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  border:1px solid var(--line);border-radius:999px;padding:6px 11px;
+  background:transparent;color:var(--paper);cursor:pointer;text-decoration:none;transition:.15s;
+}
+.mini:hover{border-color:#7EB0E8;color:#7EB0E8;}
+.mini:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.vote{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--line);border-radius:999px;padding:6px 11px;
+  background:transparent;color:var(--paper);cursor:pointer;transition:.15s;
+}
+.vote:hover{border-color:var(--gold);color:var(--gold);}
+.vote:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.vote.on{border-color:var(--gold);color:var(--gold);background:rgba(224,160,26,.12);}
+.vote:disabled{opacity:.45;cursor:not-allowed;}
+.vote-mark{font-size:10px;line-height:1;}
+.rank{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);display:inline-block;margin-left:8px;
+}
+
+footer{padding:36px 0 56px;color:var(--muted);font-size:13px;text-align:center;border-bottom:0;}
+footer p{margin:0 0 8px;}
+
+@media (max-width:760px){
+  .homebase{grid-template-columns:1fr;}
+  .cstop{grid-template-columns:1fr;gap:4px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;}
+  html{scroll-behavior:auto;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Night 1</a>
+      <a class="on" href="night2.html">Night 2</a>
+      <a href="eats.html">Late Night Eats</a>
+      <a href="games.html">Games</a>
+    </nav>
+    <p class="eyebrow">Saturday · Lincoln Square · Dinner at 7</p>
+    <h1><span class="h1-kicker">Night 2:</span><br>Lincoln Square</h1>
+    <p class="sub">Dinner at Ardor by Chance. We'll Uber over together. After that, walking Lincoln is optional — vote on the bars if you want a plan.</p>
+    <div class="hq-row">
+      <button type="button" class="addr-chip" data-show="house">Dinner · <b>4624 N Lincoln Ave</b> · show on map</button>
+      <a class="addr-chip" href="https://www.google.com/maps/search/?api=1&query=Ardor%20by%20Chance%2C%204624%20N%20Lincoln%20Ave%2C%20Chicago%2C%20IL%2060625" target="_blank" rel="noopener">Directions ↗</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="homebase">
+      <svg class="hb-icon" viewBox="0 0 80 80" aria-hidden="true">
+        <rect width="80" height="80" rx="18" fill="#E0A01A"/>
+        <rect x="18" y="28" width="44" height="34" rx="3" fill="#2A1810"/>
+        <path d="M22 28h36l-4-10H26z" fill="#F4EFE6"/>
+        <rect x="34" y="44" width="12" height="18" fill="#F4EFE6"/>
+        <circle cx="28" cy="40" r="3" fill="#E0A01A"/>
+        <circle cx="52" cy="40" r="3" fill="#E0A01A"/>
+      </svg>
+      <div>
+        <p class="hb-label">Dinner · 7:00 p.m.</p>
+        <p class="hb-name">Ardor by Chance</p>
+        <p class="hb-why">This is the reservation. We Uber from the house together — nobody needs to get there on their own.</p>
+        <ul class="hb-list">
+          <li><b>Address</b> — 4624 N Lincoln Ave. About a 10-minute Uber from 1408 W Belle Plaine.</li>
+          <li><b>After dinner</b> — optional. If anyone wants to wander, the bars below are all walkable from the restaurant. No cars, and nobody has to do a crawl.</li>
+          <li><b>Walkable from here</b> — Ricochet’s and Sojourn are next door. Daily Bar and The Getaway are a couple minutes south. Lincoln Square Taproom is two blocks north. The Bad Apple is about eight minutes south on Lincoln.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>The map</h2></div>
+    <p class="sec-note">The gold pin is dinner. Everything else is a walk from there. The dashed line is one possible southbound loop — skip it if you want.</p>
+    <div class="map-tools">
+      <button class="btn" id="crawlBtn" aria-pressed="false">Show a walk idea</button>
+      <button class="btn" id="resetBtn">Reset view</button>
+    </div>
+    <div class="map-legend" aria-hidden="true">
+      <span><i class="lg lg-hq"></i> Ardor</span>
+      <span><i class="lg lg-pin"></i> Bar</span>
+      <span><i class="lg lg-crawl"></i> Optional walk</span>
+    </div>
+    <div id="map"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>A walkable idea</h2></div>
+    <p class="sec-note">If anyone wants to wander after dinner, this is one easy southbound loop. Skip it, hop around, or just pick a bar from the list.</p>
+    <div class="crawl" id="crawlList"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Every spot</h2></div>
+    <p class="sec-note">All walkable from Ardor. Tap ▲ to vote so we can see what the group actually wants.</p>
+    <div class="filters" id="filters" role="group" aria-label="Filter venues"></div>
+    <p class="vote-status" id="voteStatus"></p>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>The Grafton and Huettenbar are gone. Those rooms are The Getaway and Lincoln Square Taproom now.</p>
+    <p>Hours drift. The Bad Apple’s kitchen may close before the bar — confirm if you want food after Ardor.</p>
+    <p><a href="index.html">Night 1</a> · <a href="eats.html">Late Night Eats</a> · <a href="games.html">Games</a></p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+const HQ = {lat:41.96555, lng:-87.68635, addr:"4624 N Lincoln Ave, Chicago, IL 60625", name:"Ardor by Chance"};
+
+/* Same Firebase project as Night 1. Paste the web app config here.
+   Place IDs do not overlap, so both pages share the `votes` tree.
+
+   Enable Anonymous Auth + Realtime Database, then add your github.io
+   host under Authentication → Settings → Authorized domains.
+
+   Database rules:
+   {
+     "rules": {
+       "votes": {
+         "$placeId": {
+           ".read": true,
+           "$uid": {
+             ".write": "auth != null && auth.uid === $uid",
+             ".validate": "newData.isBoolean()"
+           }
+         }
+       }
+     }
+   }
+*/
+const FIREBASE = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: ""
+};
+const votingLive = !!(FIREBASE.apiKey && FIREBASE.databaseURL);
+
+const PLACES = [
+{
+  id:"ricochet",
+  name:"Ricochet's Tavern",
+  addr:"4644 N Lincoln Ave", lat:41.96595, lng:-87.68655,
+  tags:["Dive","Darts","Games"], dist:"next door", trip:"1 min walk",
+  hours:"Fri 1pm–2am · Sat 11am–3am",
+  vibe:"Corner dive with green awnings, three dart boards, foosball, pinball, and a jukebox. The Lincoln Square regulars' bar.",
+  fun:"Throw darts, play foosball, put something on the juke. This is the room that actually holds twelve without a reservation.",
+  note:"Next door to dinner. Easiest first stop if you just want to walk out of Ardor and keep going."
+},
+{
+  id:"getaway",
+  name:"The Getaway",
+  addr:"4530 N Lincoln Ave", lat:41.96395, lng:-87.68535,
+  tags:["Cocktails","Beer"], dist:"0.1 mi", trip:"3 min walk",
+  hours:"Fri 3pm–2am · Sat 3pm–3am",
+  vibe:"The old Grafton room, redone in 2024. Cocktails and beer, seating for about eighty, two TVs, live music some nights.",
+  fun:"A proper second-stop drink. Bigger and cleaner than Ricochet’s without feeling precious.",
+  note:"Two blocks south of dinner. Easy walk if you want a cleaner drink after Ardor."
+},
+{
+  id:"badapple",
+  name:"The Bad Apple",
+  addr:"4300 N Lincoln Ave", lat:41.95965, lng:-87.68275,
+  tags:["Food","Beer","Games"], dist:"0.5 mi", trip:"8 min walk",
+  hours:"Fri & Sat 11:30am–12am · confirm bar close",
+  vibe:"Burger-and-beer pub with a serious tap list and a game room. The south end of the Lincoln walk.",
+  fun:"A burger only if dinner at Ardor was light. Otherwise a last beer and the game room.",
+  note:"About eight minutes south of The Getaway. Kitchen and bar listings disagree on close — some say midnight, some later. Call if you are counting on food."
+},
+{
+  id:"sojourn",
+  name:"Sojourn Cocktail Lounge",
+  addr:"4620 N Lincoln Ave", lat:41.96548, lng:-87.68628,
+  tags:["Cocktails"], dist:"next door", trip:"1 min walk",
+  hours:"Fri & Sat from 2:30pm",
+  vibe:"Small cocktail room literally next door to Ardor. Cleaner drinks than the dives.",
+  fun:"A split-off cocktail, not the twelve-person base.",
+  note:"Use this if a few people want a nicer drink. It will not hold the whole group."
+},
+{
+  id:"taproom",
+  name:"Lincoln Square Taproom",
+  addr:"4721 N Lincoln Ave", lat:41.96735, lng:-87.68745,
+  tags:["Beer","Darts","Games"], dist:"0.1 mi", trip:"3 min walk",
+  hours:"Neighborhood hours — confirm",
+  vibe:"The old Huettenbar room. Local beer, a few German holdovers, darts, board games.",
+  fun:"A beer and a board game if you want to start north of dinner.",
+  note:"Two blocks north of Ardor. Walkable if you want to start that direction — not required."
+},
+{
+  id:"daily",
+  name:"Daily Bar & Grill",
+  addr:"4560 N Lincoln Ave", lat:41.96455, lng:-87.68575,
+  tags:["Food","Patio"], dist:"0.1 mi", trip:"2 min walk",
+  hours:"Fri 12pm–10pm · Sat 12pm–10pm",
+  vibe:"Lincoln Square beer garden since the ’90s. Comfort food, martinis, a patio.",
+  fun:"A patio beer if you arrive before the 7pm reservation.",
+  note:"Closes around 10 or 11. This is a before-dinner move, not a closer. Skip it after Ardor."
+}
+];
+
+const CRAWL = [
+  {id:"ricochet", walkMin:1, do:"Next door. Darts, foosball, pinball."},
+  {id:"getaway",  walkMin:3, do:"Two blocks south. One proper round."},
+  {id:"badapple", walkMin:8, do:"Keep walking south. Last beer, game room, maybe a burger."}
+];
+const CRAWL_IDS = CRAWL.map(s=>s.id);
+
+const ROUTE = [
+  [41.96555,-87.68635],
+  [41.96595,-87.68655],
+  [41.96395,-87.68535],
+  [41.95965,-87.68275]
+];
+
+const FILTERS = [
+  {label:"All 6", test:()=>true},
+  {label:"Most voted", sort:"votes"},
+  {label:"Walk idea", test:p=>CRAWL_IDS.includes(p.id)},
+  {label:"Dive & games", test:p=>p.tags.some(t=>["Dive","Darts","Games"].includes(t))},
+  {label:"Cocktails", test:p=>p.tags.includes("Cocktails")},
+  {label:"Food", test:p=>p.tags.includes("Food")}
+];
+
+let voteCounts = {};
+let myVotes = {};
+let uid = null;
+let currentFilter = FILTERS[0];
+
+function tally(id){ return voteCounts[id]||0; }
+function voted(id){ return !!myVotes[id]; }
+
+function placeById(id){ return PLACES.find(p=>p.id===id); }
+function isCrawlPlace(id){ return CRAWL_IDS.includes(id); }
+
+const map = L.map('map',{scrollWheelZoom:false}).setView([HQ.lat,HQ.lng],15);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap contributors &copy; CARTO', maxZoom:20
+}).addTo(map);
+map.once('focus',()=>map.scrollWheelZoom.enable());
+
+const hqIcon = L.divIcon({
+  className:'', iconSize:[56,68], iconAnchor:[28,64], popupAnchor:[0,-58],
+  html:`<div class="pin-hq"><svg width="56" height="68" viewBox="0 0 56 68" aria-hidden="true">
+    <path d="M28 65s-21-19-21-36a21 21 0 1 1 42 0c0 17-21 36-21 36z" fill="#fff" stroke="#1C1917" stroke-width="2.4"/>
+    <path d="M16 31.5l12-10 12 10V44H16z" fill="#E0A01A"/>
+    <path d="M16 32.2l12-10 12 10" fill="none" stroke="#1C1917" stroke-width="1.6" stroke-linejoin="round"/>
+    <rect x="20" y="35" width="16" height="9" rx="1" fill="#fff"/>
+    <rect x="26" y="38" width="4" height="6" fill="#E0A01A"/>
+  </svg></div>`
+});
+const BEER_GLYPH = '<svg viewBox="0 0 24 24" fill="#F4EFE6" aria-hidden="true"><path d="M7.2 6.5h9.2l-1.2 13.2H8.4z"/><path d="M7.2 6.5c0-2.2 2-3.8 4.6-3.8s4.6 1.6 4.6 3.8"/><path d="M16.6 9.2c1.8.3 3 1.3 3 2.6 0 1.5-1.7 2.8-3.8 2.8" fill="none" stroke="#F4EFE6" stroke-width="1.7"/></svg>';
+function placeIcon(crawl){
+  return L.divIcon({
+    className:'', iconSize:[36,36], iconAnchor:[18,18], popupAnchor:[0,-18],
+    html:`<div class="pin-fun${crawl?' crawl':''}">${BEER_GLYPH}</div>`
+  });
+}
+
+const markers = {};
+const hqMarker = L.marker([HQ.lat,HQ.lng],{icon:hqIcon, title:"Ardor by Chance", zIndexOffset:3000})
+ .addTo(map)
+ .bindPopup(`<span class="pop-name">Ardor by Chance</span><span class="pop-meta">${HQ.addr}</span><p class="pop-note">Dinner at 7. After that, the bars on this page are all a walk from here.</p>`);
+markers.house = hqMarker;
+
+function gmapsLink(p){
+  return "https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(HQ.addr)
+    +"&destination="+encodeURIComponent(p.name+", "+p.addr+", Chicago, IL")
+    +"&travelmode=walking";
+}
+function hqMapsLink(){
+  return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("Ardor by Chance, "+HQ.addr);
+}
+
+function neighborhoodBounds(){
+  const tap = placeById("taproom");
+  const getaway = placeById("getaway");
+  const apple = placeById("badapple");
+  return L.latLngBounds([
+    [HQ.lat, HQ.lng],
+    [tap.lat, tap.lng],
+    [getaway.lat, getaway.lng],
+    [apple.lat, apple.lng]
+  ]);
+}
+function resetView(){
+  map.closePopup();
+  map.fitBounds(neighborhoodBounds().pad(0.16));
+}
+
+function renderCrawl(){
+  const totalMin = CRAWL.reduce((n,s)=>n+s.walkMin,0);
+  const start = `<li class="cstop start">
+    <span class="cstop-walk">Start</span>
+    <div>
+      <span class="cstop-n">Dinner</span>
+      <button class="cstop-name" type="button" data-show="house">Ardor by Chance</button>
+      <span class="cstop-do">4624 N Lincoln — eat first</span>
+      <div class="cstop-actions">
+        <button class="mini" type="button" data-show="house">Show on map</button>
+        <a class="mini" href="${hqMapsLink()}" target="_blank" rel="noopener">Directions ↗</a>
+      </div>
+    </div>
+  </li>`;
+  const stops = CRAWL.map((s,i)=>{
+    const p = placeById(s.id);
+    const label = i===CRAWL.length-1 ? "Last stop" : "Stop "+String(i+1).padStart(2,"0");
+    return `<li class="cstop">
+      <span class="cstop-walk">${s.walkMin} min walk</span>
+      <div>
+        <span class="cstop-n">${label}</span>
+        <button class="cstop-name" type="button" data-jump="${p.id}">${p.name}</button>
+        <span class="cstop-do">${s.do}</span>
+        <div class="cstop-actions">
+          <button class="mini" type="button" data-jump="${p.id}">Notes</button>
+          <button class="mini" type="button" data-show="${p.id}">Show on map</button>
+          <a class="mini" href="${gmapsLink(p)}" target="_blank" rel="noopener">Directions ↗</a>
+        </div>
+      </div>
+    </li>`;
+  }).join("");
+  document.getElementById("crawlList").innerHTML =
+    `<ol class="clist">${start}${stops}</ol>
+     <p class="crawl-total">OPTIONAL LOOP <b>≈ ${totalMin} min / 0.6 mi</b> · ALL ON LINCOLN AVENUE</p>`;
+}
+renderCrawl();
+
+PLACES.forEach(p=>{
+  const m = L.marker([p.lat,p.lng],{
+    icon: placeIcon(false),
+    title: p.name,
+    zIndexOffset: 1000
+  }).addTo(map);
+  m.bindPopup(
+    `<span class="pop-name">${p.name}</span>
+     <span class="pop-meta">${p.addr} · ${p.dist} · ${p.trip}</span>
+     <p class="pop-note">${p.note}</p>
+     <button class="pop-link" data-jump="${p.id}">Read the full entry ↓</button>`
+  );
+  markers[p.id]=m;
+});
+
+const routeHalo = L.polyline(ROUTE,{color:'#fff', weight:10, opacity:.9, lineJoin:'round'});
+const routeLine = L.polyline(ROUTE,{color:'#1E4D8C', weight:4, opacity:1, dashArray:'12 16', lineJoin:'round'});
+
+const crawlArrows = [];
+function bearing(a,b){ return Math.atan2(b[1]-a[1], b[0]-a[0]) * 180 / Math.PI; }
+function showCrawlFlow(){
+  hideCrawlFlow();
+  for(let i=0;i<ROUTE.length-1;i++){
+    const a=ROUTE[i], b=ROUTE[i+1];
+    if(Math.hypot(b[0]-a[0], b[1]-a[1]) < 0.0008) continue;
+    const deg = bearing(a,b);
+    const icon = L.divIcon({
+      className:'', iconSize:[22,22], iconAnchor:[11,11],
+      html:`<div class="crawl-arrow-wrap" style="transform:rotate(${deg}deg)"><div class="crawl-arrow">▲</div></div>`
+    });
+    crawlArrows.push(L.marker([(a[0]+b[0])/2,(a[1]+b[1])/2],{
+      icon, interactive:false, zIndexOffset:500, keyboard:false
+    }).addTo(map));
+  }
+  requestAnimationFrame(()=>{
+    const el = routeLine.getElement();
+    if(el) el.classList.add('crawl-flow');
+  });
+}
+function hideCrawlFlow(){
+  crawlArrows.splice(0).forEach(m=>map.removeLayer(m));
+  const el = routeLine.getElement();
+  if(el) el.classList.remove('crawl-flow');
+}
+
+let crawlOn=false;
+function refreshCrawlPins(){
+  PLACES.forEach(p=>{
+    const onCrawl = crawlOn && isCrawlPlace(p.id);
+    markers[p.id].setIcon(placeIcon(onCrawl));
+    markers[p.id].setZIndexOffset(onCrawl ? 800 : 1000);
+  });
+}
+const crawlBtn=document.getElementById('crawlBtn');
+crawlBtn.addEventListener('click',()=>{
+  crawlOn=!crawlOn;
+  crawlBtn.classList.toggle('on',crawlOn);
+  crawlBtn.setAttribute('aria-pressed',String(crawlOn));
+  crawlBtn.textContent = crawlOn ? 'Hide walk idea' : 'Show a walk idea';
+  refreshCrawlPins();
+  if(crawlOn){
+    routeHalo.addTo(map); routeLine.addTo(map);
+    showCrawlFlow();
+    map.fitBounds(routeLine.getBounds().pad(0.22));
+  }else{
+    hideCrawlFlow();
+    map.removeLayer(routeLine); map.removeLayer(routeHalo);
+    resetView();
+  }
+});
+document.getElementById('resetBtn').addEventListener('click', resetView);
+resetView();
+
+const grid=document.getElementById('grid');
+const voteStatus=document.getElementById('voteStatus');
+
+function rankedList(){
+  return [...PLACES].sort((a,b)=> tally(b.id)-tally(a.id) || a.name.localeCompare(b.name));
+}
+
+function cardHTML(p, rank){
+  const mine = voted(p.id);
+  const count = tally(p.id);
+  const rankMark = rank ? `<span class="rank">#${rank}</span>` : "";
+  return `<article class="card" id="card-${p.id}">
+    <div class="card-top">
+      <div>
+        <h3>${p.name}${rankMark}</h3>
+      </div>
+      <div class="dist">${p.dist}<br>${p.trip}</div>
+    </div>
+    <div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    <p class="row"><span class="lbl">The vibe</span>${p.vibe}</p>
+    <p class="row"><span class="lbl">What to do</span>${p.fun}</p>
+    <p class="note"><span class="lbl">Note</span>${p.note}</p>
+    <div class="card-foot">
+      <span class="hours">${p.addr} · ${p.hours}</span>
+      <button class="vote${mine?' on':''}" data-vote="${p.id}" ${votingLive?'':'disabled'}
+        aria-pressed="${mine}" title="${votingLive?(mine?'Remove your vote':'Vote for this spot'):'Voting not live yet'}">
+        <span class="vote-mark">▲</span>
+        <span class="vote-n">${count}</span>
+      </button>
+      <button class="mini" data-show="${p.id}">Show on map</button>
+      <a class="mini" href="${gmapsLink(p)}" target="_blank" rel="noopener">Directions ↗</a>
+    </div>
+  </article>`;
+}
+
+function visibleList(){
+  if(currentFilter.sort==="votes") return rankedList();
+  return PLACES.filter(currentFilter.test);
+}
+
+function render(list){
+  const ranking = currentFilter.sort==="votes";
+  grid.innerHTML = list.map((p,i)=>cardHTML(p, ranking ? i+1 : 0)).join("");
+}
+
+function applyFilter(){
+  render(visibleList());
+}
+
+applyFilter();
+
+const filterBar=document.getElementById('filters');
+FILTERS.forEach((f,i)=>{
+  const b=document.createElement('button');
+  b.className='chip'+(i===0?' on':'');
+  b.textContent=f.label;
+  b.addEventListener('click',()=>{
+    filterBar.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+    currentFilter = f;
+    applyFilter();
+  });
+  filterBar.appendChild(b);
+});
+
+voteStatus.textContent = votingLive
+  ? "Tap ▲ on a card to vote. One vote per spot per phone — tap again to take it back."
+  : "Voting is not live yet. Add a Firebase config at the top of the script to turn on group tallies.";
+
+function focusPlace(id){
+  const target = id==="house" ? HQ : placeById(id);
+  if(!target) return;
+  document.getElementById('map').scrollIntoView({block:'center'});
+  map.setView([target.lat,target.lng],17,{animate:true});
+  markers[id].openPopup();
+}
+function jumpToCard(id){
+  if(!document.getElementById('card-'+id)){
+    currentFilter = FILTERS[0];
+    filterBar.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on',i===0));
+    applyFilter();
+  }
+  const card=document.getElementById('card-'+id);
+  if(!card) return;
+  card.scrollIntoView({block:'center'});
+  card.classList.add('flash');
+  setTimeout(()=>card.classList.remove('flash'),1600);
+}
+
+async function toggleVote(id){
+  if(!votingLive || !uid) return;
+  const ref = firebase.database().ref("votes/"+id+"/"+uid);
+  try{
+    if(voted(id)) await ref.remove();
+    else await ref.set(true);
+  }catch(err){
+    console.warn("Vote failed", err);
+  }
+}
+
+document.addEventListener('click',e=>{
+  const show=e.target.closest('[data-show]');
+  if(show) focusPlace(show.dataset.show);
+  const jump=e.target.closest('[data-jump]');
+  if(jump){ map.closePopup(); jumpToCard(jump.dataset.jump); }
+  const voteBtn=e.target.closest('[data-vote]');
+  if(voteBtn && !voteBtn.disabled) toggleVote(voteBtn.dataset.vote);
+});
+
+function ingestVotes(data){
+  voteCounts = {};
+  myVotes = {};
+  Object.keys(data||{}).forEach(placeId=>{
+    const voters = data[placeId]||{};
+    voteCounts[placeId] = Object.keys(voters).filter(k=>voters[k]).length;
+    if(uid && voters[uid]) myVotes[placeId] = true;
+  });
+  applyFilter();
+}
+
+if(votingLive){
+  try{
+    firebase.initializeApp(FIREBASE);
+    firebase.auth().signInAnonymously()
+      .then(cred=>{
+        uid = cred.user.uid;
+        firebase.database().ref("votes").on("value", snap=>ingestVotes(snap.val()));
+      })
+      .catch(err=>{
+        console.warn("Firebase auth failed", err);
+        voteStatus.textContent = "Voting could not start. Check the Firebase config and authorized domains.";
+      });
+  }catch(err){
+    console.warn("Firebase init failed", err);
+    voteStatus.textContent = "Voting could not start. Check the Firebase config.";
+  }
+}
+</script>
+</body>
+</html>

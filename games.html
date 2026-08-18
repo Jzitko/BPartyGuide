@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Games We Have</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;0,9..144,700;1,9..144,500&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#141210;
+  --panel:#1E1B18;
+  --panel2:#282421;
+  --line:#3F3832;
+  --line-soft:#2C2824;
+  --paper:#F4EFE6;
+  --muted:#9A9188;
+  --gold:#E0A01A;
+  --rose:#C43B5A;
+  --indigo:#1E4D8C;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'Figtree',system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:#7EB0E8;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px;}
+
+header{
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#1A1714,#141210);
+  padding:40px 0 32px;
+  text-align:center;
+}
+.site-nav{
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 18px;
+}
+.site-nav a{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;text-decoration:none;
+  border:1px solid var(--line);border-radius:999px;
+  padding:6px 14px;color:var(--muted);
+}
+.site-nav a:hover{color:var(--paper);border-color:var(--muted);}
+.site-nav a.on{border-color:var(--gold);color:var(--gold);}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 12px;
+}
+h1{
+  font-family:'Bangers',Impact,sans-serif;
+  font-weight:400;
+  font-size:clamp(36px,7.2vw,68px);
+  line-height:1.05;
+  margin:0;
+  color:var(--paper);
+  letter-spacing:.03em;
+}
+h1 .h1-kicker{color:var(--gold);}
+.sub{margin:14px auto 0;max-width:560px;color:var(--muted);font-size:15.5px;}
+
+section{padding:40px 0;border-bottom:1px solid var(--line-soft);}
+.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+h2{
+  font-family:'Bangers',Impact,sans-serif;font-weight:400;
+  font-size:clamp(28px,4.2vw,42px);letter-spacing:.04em;text-transform:uppercase;
+  margin:0;color:var(--paper);
+}
+.sec-note{color:var(--muted);font-size:14.5px;margin:0 0 20px;max-width:640px;}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.chip{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;
+  background:transparent;color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;padding:7px 13px;cursor:pointer;transition:.15s;
+}
+.chip:hover{color:var(--paper);border-color:var(--muted);}
+.chip:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#1C1917;font-weight:600;}
+.vote-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin:0 0 18px;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.card{
+  border:1px solid var(--line);border-radius:14px;background:var(--panel);
+  padding:18px;display:flex;flex-direction:column;scroll-margin-top:20px;
+  transition:border-color .2s, transform .2s;
+  overflow:hidden;
+}
+.card:hover{border-color:#6B625A;}
+.card-art{
+  position:relative;
+  height:188px;
+  margin:-18px -18px 16px;
+  background:var(--panel2);
+  overflow:hidden;
+}
+.card-art .ph{
+  position:absolute;inset:0;
+  display:flex;align-items:flex-end;
+  padding:16px 18px;
+  font-family:'Bangers',Impact,sans-serif;
+  font-size:28px;letter-spacing:.04em;line-height:1.05;
+  color:var(--paper);
+  text-transform:uppercase;
+}
+.card-art img{
+  position:relative;z-index:1;
+  width:100%;height:100%;
+  object-fit:cover;object-position:center top;
+  display:block;
+}
+.tone-n64{background:linear-gradient(160deg,#1E4D8C,#141210 70%);}
+.tone-switch{background:linear-gradient(160deg,#C43B5A,#141210 70%);}
+.tone-cards{background:linear-gradient(160deg,#3F3832,#1E1B18 68%);}
+.tone-meme{background:linear-gradient(160deg,#E0A01A,#2A1810 72%);}
+.tone-skull{background:linear-gradient(160deg,#5A1F2C,#141210 70%);}
+.tone-wyr{background:linear-gradient(160deg,#3A322C,#1A1714 68%);}
+.tone-meme .ph,.tone-n64 .ph{color:#F4EFE6;}
+
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.card h3{
+  font-family:'Fraunces',Georgia,serif;font-weight:650;
+  font-size:22px;letter-spacing:-.02em;line-height:1.15;margin:0;
+}
+.stats{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);
+  white-space:nowrap;text-align:right;line-height:1.4;
+}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 12px;}
+.tag{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px 8px;color:var(--muted);
+}
+.row{margin:0 0 10px;font-size:14.5px;}
+.row .lbl{
+  display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:3px;
+}
+.card-foot{
+  margin-top:auto;padding-top:12px;border-top:1px solid var(--line-soft);
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+}
+.mini{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  border:1px solid var(--line);border-radius:999px;padding:6px 11px;
+  background:transparent;color:var(--paper);cursor:pointer;text-decoration:none;transition:.15s;
+}
+.mini:hover{border-color:#7EB0E8;color:#7EB0E8;}
+.mini:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.vote{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--line);border-radius:999px;padding:6px 11px;
+  background:transparent;color:var(--paper);cursor:pointer;transition:.15s;
+}
+.vote:hover{border-color:var(--gold);color:var(--gold);}
+.vote:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;}
+.vote.on{border-color:var(--gold);color:var(--gold);background:rgba(224,160,26,.12);}
+.vote:disabled{opacity:.45;cursor:not-allowed;}
+.vote-mark{font-size:10px;line-height:1;}
+.rank{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  color:var(--gold);display:inline-block;margin-left:8px;
+}
+
+footer{padding:36px 0 56px;color:var(--muted);font-size:13px;text-align:center;border-bottom:0;}
+footer p{margin:0 0 8px;}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;}
+  html{scroll-behavior:auto;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav class="site-nav" aria-label="Site">
+      <a href="index.html">Night 1</a>
+      <a href="night2.html">Night 2</a>
+      <a href="eats.html">Late Night Eats</a>
+      <a class="on" href="games.html">Games</a>
+    </nav>
+    <p class="eyebrow">At the house · Already packed</p>
+    <h1><span class="h1-kicker">Games</span><br>We Have</h1>
+    <p class="sub">What’s actually at the Airbnb. Vote so we know what to set up first — N64 is four at a time, Smash goes to eight, the party boxes can take the room.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>The shelf</h2></div>
+    <p class="sec-note">Tap ▲ to vote. Filter by console or cards. Controller games have no rules link — you already know how to mash buttons.</p>
+    <div class="filters" id="filters" role="group" aria-label="Filter games"></div>
+    <p class="vote-status" id="voteStatus"></p>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>This is the house inventory only. If it is not on a card, we did not pack it.</p>
+    <p><a href="index.html">Night 1</a> · <a href="night2.html">Night 2</a> · <a href="eats.html">Late Night Eats</a></p>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+/* Same Firebase project as Night 1 / Night 2. Paste the web app config here.
+   Game IDs use a g- prefix so they do not collide with bar votes.
+
+   Enable Anonymous Auth + Realtime Database, then add your github.io
+   host under Authentication → Settings → Authorized domains.
+
+   Database rules:
+   {
+     "rules": {
+       "votes": {
+         "$placeId": {
+           ".read": true,
+           "$uid": {
+             ".write": "auth != null && auth.uid === $uid",
+             ".validate": "newData.isBoolean()"
+           }
+         }
+       }
+     }
+   }
+*/
+const FIREBASE = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: ""
+};
+const votingLive = !!(FIREBASE.apiKey && FIREBASE.databaseURL);
+
+const GAMES = [
+{
+  id:"g-mario-party-2",
+  name:"Mario Party 2",
+  tags:["N64","Video"],
+  tone:"tone-n64",
+  players:"1–4",
+  time:"30–45 min / board",
+  img:"",
+  vibe:"N64 board-game chaos. Roll, steal stars, and lose friendships in the mini-game hall.",
+  fun:"Best as a four-player rotation. Run a board, swap losers, keep the bracket moving.",
+  rules:""
+},
+{
+  id:"g-mario-kart-64",
+  name:"Mario Kart 64",
+  tags:["N64","Video"],
+  tone:"tone-n64",
+  players:"1–4",
+  time:"~5 min / race",
+  img:"https://upload.wikimedia.org/wikipedia/en/a/a1/Mario_Kart_64.jpg",
+  vibe:"The classic four-player split screen. Rainbow Road still ends friendships.",
+  fun:"Cups if people are locked in. Single races if the couch is rotating.",
+  rules:""
+},
+{
+  id:"g-smash-ultimate",
+  name:"Super Smash Bros. Ultimate",
+  tags:["Switch","Video"],
+  tone:"tone-switch",
+  players:"1–8",
+  time:"2–8 min / match",
+  img:"https://upload.wikimedia.org/wikipedia/en/5/50/Super_Smash_Bros._Ultimate.jpg",
+  vibe:"The Switch free-for-all. Eight people can actually play at once — everyone else heckles.",
+  fun:"Biggest video game in the house. Free-for-all with items on, or a clean 1v1 if it gets sweaty.",
+  rules:""
+},
+{
+  id:"g-playing-cards",
+  name:"Classic card games",
+  tags:["Cards","Party"],
+  tone:"tone-cards",
+  players:"2–12+",
+  time:"Varies",
+  img:"",
+  vibe:"A few decks of playing cards. No box required — poker, Presidents, Kings, Ride the Bus.",
+  fun:"This is how you get the whole house in one game. Presidents / Asshole scales; Kings and Ride the Bus if people want to drink.",
+  rules:"https://bicyclecards.com/how-to-play"
+},
+{
+  id:"g-what-do-you-meme",
+  name:"What Do You Meme?",
+  tags:["Party","Cards"],
+  tone:"tone-meme",
+  players:"3–20",
+  time:"30–60 min",
+  img:"",
+  vibe:"Caption the photo. Judge picks the winner. Cards Against Humanity energy, internet pictures.",
+  fun:"The boxed game that can actually take the whole room. Best full-group option on the shelf.",
+  rules:"https://cdn.shopify.com/s/files/1/0082/1028/4640/files/WDYM_Instructions.pdf?28065"
+},
+{
+  id:"g-skull",
+  name:"Skull",
+  tags:["Party","Cards"],
+  tone:"tone-skull",
+  players:"3–6",
+  time:"15–30 min",
+  img:"",
+  vibe:"Hervé Marly and Tom Vuarchex. Bluff with flowers and one skull. Bid, flip, don’t die.",
+  fun:"A sharp drinking game if you want one. Side table only — it will not hold twelve.",
+  rules:"https://cdn.svc.asmodee.net/production-spacecowboys/uploads/2025/11/SKULL_RULES_EN.pdf"
+},
+{
+  id:"g-would-you-rather",
+  name:"Would You Rather?",
+  tags:["Party","Cards"],
+  tone:"tone-wyr",
+  players:"3–10+",
+  time:"20–40 min",
+  img:"",
+  vibe:"The boxed dilemma game. Read the card, pick a side, watch people reveal themselves.",
+  fun:"Low setup, loud arguments. Easy to play without the board if the group just wants the cards.",
+  rules:"https://www.ultraboardgames.com/would-you-rather/game-rules.php"
+}
+];
+
+const FILTERS = [
+  {label:"All 7", test:()=>true},
+  {label:"Most voted", sort:"votes"},
+  {label:"N64", test:g=>g.tags.includes("N64")},
+  {label:"Switch", test:g=>g.tags.includes("Switch")},
+  {label:"Cards & party", test:g=>g.tags.includes("Party")}
+];
+
+let voteCounts = {};
+let myVotes = {};
+let uid = null;
+let currentFilter = FILTERS[0];
+
+function tally(id){ return voteCounts[id]||0; }
+function voted(id){ return !!myVotes[id]; }
+
+const grid=document.getElementById('grid');
+const voteStatus=document.getElementById('voteStatus');
+
+function rankedList(){
+  return [...GAMES].sort((a,b)=> tally(b.id)-tally(a.id) || a.name.localeCompare(b.name));
+}
+
+function cardHTML(g, rank){
+  const mine = voted(g.id);
+  const count = tally(g.id);
+  const rankMark = rank ? `<span class="rank">#${rank}</span>` : "";
+  const img = g.img
+    ? `<img src="${g.img}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`
+    : "";
+  const rules = g.rules
+    ? `<a class="mini" href="${g.rules}" target="_blank" rel="noopener">Full rules ↗</a>`
+    : "";
+  return `<article class="card" id="card-${g.id}">
+    <div class="card-art ${g.tone}">
+      <span class="ph">${g.name}</span>
+      ${img}
+    </div>
+    <div class="card-top">
+      <h3>${g.name}${rankMark}</h3>
+      <div class="stats">${g.players}<br>${g.time}</div>
+    </div>
+    <div class="tags">${g.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    <p class="row"><span class="lbl">The game</span>${g.vibe}</p>
+    <p class="row"><span class="lbl">What's fun</span>${g.fun}</p>
+    <div class="card-foot">
+      <button class="vote${mine?' on':''}" data-vote="${g.id}" ${votingLive?'':'disabled'}
+        aria-pressed="${mine}" title="${votingLive?(mine?'Remove your vote':'Vote for this game'):'Voting not live yet'}">
+        <span class="vote-mark">▲</span>
+        <span class="vote-n">${count}</span>
+      </button>
+      ${rules}
+    </div>
+  </article>`;
+}
+
+function visibleList(){
+  if(currentFilter.sort==="votes") return rankedList();
+  return GAMES.filter(currentFilter.test);
+}
+
+function render(list){
+  const ranking = currentFilter.sort==="votes";
+  grid.innerHTML = list.map((g,i)=>cardHTML(g, ranking ? i+1 : 0)).join("");
+}
+
+function applyFilter(){
+  render(visibleList());
+}
+
+applyFilter();
+
+const filterBar=document.getElementById('filters');
+FILTERS.forEach((f,i)=>{
+  const b=document.createElement('button');
+  b.className='chip'+(i===0?' on':'');
+  b.textContent=f.label;
+  b.addEventListener('click',()=>{
+    filterBar.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+    currentFilter = f;
+    applyFilter();
+  });
+  filterBar.appendChild(b);
+});
+
+voteStatus.textContent = votingLive
+  ? "Tap ▲ on a card to vote. One vote per game per phone — tap again to take it back."
+  : "Voting is not live yet. Add a Firebase config at the top of the script to turn on group tallies.";
+
+async function toggleVote(id){
+  if(!votingLive || !uid) return;
+  const ref = firebase.database().ref("votes/"+id+"/"+uid);
+  try{
+    if(voted(id)) await ref.remove();
+    else await ref.set(true);
+  }catch(err){
+    console.warn("Vote failed", err);
+  }
+}
+
+document.addEventListener('click',e=>{
+  const voteBtn=e.target.closest('[data-vote]');
+  if(voteBtn && !voteBtn.disabled) toggleVote(voteBtn.dataset.vote);
+});
+
+function ingestVotes(data){
+  voteCounts = {};
+  myVotes = {};
+  Object.keys(data||{}).forEach(placeId=>{
+    const voters = data[placeId]||{};
+    voteCounts[placeId] = Object.keys(voters).filter(k=>voters[k]).length;
+    if(uid && voters[uid]) myVotes[placeId] = true;
+  });
+  applyFilter();
+}
+
+if(votingLive){
+  try{
+    firebase.initializeApp(FIREBASE);
+    firebase.auth().signInAnonymously()
+      .then(cred=>{
+        uid = cred.user.uid;
+        firebase.database().ref("votes").on("value", snap=>ingestVotes(snap.val()));
+      })
+      .catch(err=>{
+        console.warn("Firebase auth failed", err);
+        voteStatus.textContent = "Voting could not start. Check the Firebase config and authorized domains.";
+      });
+  }catch(err){
+    console.warn("Firebase init failed", err);
+    voteStatus.textContent = "Voting could not start. Check the Firebase config.";
+  }
+}
+</script>
+</body>
+</html>
