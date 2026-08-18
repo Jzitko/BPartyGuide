@@ -454,8 +454,8 @@ const HQ = {lat:41.9558, lng:-87.6643, addr:"1408 W Belle Plaine Ave, Chicago, I
    {
      "rules": {
        "votes": {
+         ".read": true,
          "$placeId": {
-           ".read": true,
            "$uid": {
              ".write": "auth != null && auth.uid === $uid",
              ".validate": "newData.isBoolean()"
@@ -878,8 +878,8 @@ function cardHTML(p, rank){
     <p class="note"><span class="lbl">Note</span>${p.note}</p>
     <div class="card-foot">
       <span class="hours">${p.addr} · ${p.hours}</span>
-      <button class="vote${mine?' on':''}" data-vote="${p.id}" ${votingLive?'':'disabled'}
-        aria-pressed="${mine}" title="${votingLive?(mine?'Remove your vote':'Vote for this spot'):'Voting not live yet'}">
+      <button class="vote${mine?' on':''}" data-vote="${p.id}" ${votingLive&&uid?'':'disabled'}
+        aria-pressed="${mine}" title="${!votingLive?'Voting not live yet':(uid?(mine?'Remove your vote':'Vote for this spot'):'Signing in…')}">
         <span class="vote-mark">▲</span>
         <span class="vote-n">${count}</span>
       </button>
@@ -920,7 +920,7 @@ FILTERS.forEach((f,i)=>{
 });
 
 voteStatus.textContent = votingLive
-  ? "Tap ▲ on a card to vote. One vote per spot per phone — tap again to take it back."
+  ? "Signing in to vote…"
   : "Voting is not live yet. Add a Firebase config at the top of the script to turn on group tallies.";
 
 function focusPlace(id){
@@ -945,13 +945,23 @@ function jumpToCard(id){
 }
 
 async function toggleVote(id){
-  if(!votingLive || !uid) return;
+  if(!votingLive){
+    console.warn("Vote ignored: Firebase is not configured.");
+    voteStatus.textContent = "Voting is not live yet.";
+    return;
+  }
+  if(!uid){
+    console.warn("Vote ignored: not signed in yet.");
+    voteStatus.textContent = "Voting is still signing in. Wait a second and try again. If this stays, enable Anonymous Auth and add jzitko.github.io under Authorized domains.";
+    return;
+  }
   const ref = firebase.database().ref("votes/"+id+"/"+uid);
   try{
     if(voted(id)) await ref.remove();
     else await ref.set(true);
   }catch(err){
     console.warn("Vote failed", err);
+    voteStatus.textContent = "Vote failed. Publish the /votes read rules and try again.";
   }
 }
 
@@ -961,7 +971,7 @@ document.addEventListener('click',e=>{
   const jump=e.target.closest('[data-jump]');
   if(jump){ map.closePopup(); jumpToCard(jump.dataset.jump); }
   const voteBtn=e.target.closest('[data-vote]');
-  if(voteBtn && !voteBtn.disabled) toggleVote(voteBtn.dataset.vote);
+  if(voteBtn) toggleVote(voteBtn.dataset.vote);
 });
 
 function ingestVotes(data){
@@ -981,7 +991,12 @@ if(votingLive){
     firebase.auth().signInAnonymously()
       .then(cred=>{
         uid = cred.user.uid;
-        firebase.database().ref("votes").on("value", snap=>ingestVotes(snap.val()));
+        voteStatus.textContent = "Tap ▲ on a card to vote. One vote per spot per phone — tap again to take it back.";
+        applyFilter();
+        firebase.database().ref("votes").on("value", snap=>ingestVotes(snap.val()), err=>{
+          console.warn("Votes listen failed", err);
+          voteStatus.textContent = "Could not read votes. Publish the database rules that allow reading /votes.";
+        });
       })
       .catch(err=>{
         console.warn("Firebase auth failed", err);
